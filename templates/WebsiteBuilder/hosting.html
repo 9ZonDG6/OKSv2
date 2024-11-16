@@ -40,7 +40,7 @@
                 <tr>
                     <td>ID: {{ hosting.0.id }}</td>
                     <td>{{ hosting.0.title }}</td>
-                    <td>{{ hosting.0.domen_name }}</td>
+                    <td><a href="http://127.0.0.1:8000/{{ hosting.0.domen_name }}"> http://127.0.0.1:8000/{{ hosting.0.domen_name }} </a></td>
                     <td><a href="{{ hosting.0.file_html.url }}" download>Скачать HTML</a></td>
                     <td>
                         {% if hosting.0.file_css %}

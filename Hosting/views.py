@@ -16,7 +16,7 @@ class Template(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class Builder(TemplateView):
+class BuilderOKS(TemplateView):
     template_name = "WebsiteBuilder/builder.html"
 
 
@@ -46,9 +46,7 @@ class HostingView(View):
         form = HostingRequestForm(request.POST, request.FILES)
         if form.is_valid():
             hosting_request = form.save(commit=False)
-            hosting_request.user = (
-                request.user
-            )
+            hosting_request.user = request.user
             hosting_request.status = False
             hosting_request.save()
             messages.success(request, "Ваш запрос успешно отправлен!")
@@ -80,7 +78,5 @@ class RefuseHostingView(View):
             hosting = get_object_or_404(Hosting, pk=pk)
             hosting.status = False
             hosting.save()
-            messages.success(
-                request, f"Заявка '{hosting.title}' была отклонена!"
-            )
+            messages.success(request, f"Заявка '{hosting.title}' была отклонена!")
         return HttpResponseRedirect(reverse("HostingList"))

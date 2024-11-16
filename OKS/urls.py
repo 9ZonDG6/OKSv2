@@ -9,7 +9,13 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("", include("WebsiteBuilder.urls")),
     path("", include("Hosting.urls")),
+    path("", include("Usersite.urls")),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(
+        "/Usersite/", document_root=settings.BASE_DIR / "templates/Usersite"
+    )
