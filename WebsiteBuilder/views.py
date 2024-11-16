@@ -15,35 +15,39 @@ def home(request):
 class RegisterView(View):
     def get(self, request):
         form = RegisterForm()
-        return render(request, 'WebsiteBuilder/register.html', {'form': form})
+        return render(request, "WebsiteBuilder/register.html", {"form": form})
 
     def post(self, request):
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.password = make_password(form.cleaned_data['password'])
+            user.password = make_password(form.cleaned_data["password"])
             user.save()
 
             login(request, user)
 
-            return redirect('home')
-        return render(request, 'WebsiteBuilder/register.html', {'form': form})
+            return redirect("home")
+        return render(request, "WebsiteBuilder/register.html", {"form": form})
 
 
 class UserLoginView(LoginView):
-    template_name = 'WebsiteBuilder/login.html'
+    template_name = "WebsiteBuilder/login.html"
     redirect_authenticated_user = True
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class ProfileView(View):
     def get(self, request):
         form = ProfileUpdateForm(instance=request.user)
-        return render(request, 'WebsiteBuilder/profile.html', {'form': form, 'user': request.user})
+        return render(
+            request, "WebsiteBuilder/profile.html", {"form": form, "user": request.user}
+        )
 
     def post(self, request):
         form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('WebsiteBuilder:profile')  # Updated line
-        return render(request, 'WebsiteBuilder/profile.html', {'form': form, 'user': request.user})
+            return redirect("WebsiteBuilder:profile")  # Updated line
+        return render(
+            request, "WebsiteBuilder/profile.html", {"form": form, "user": request.user}
+        )
