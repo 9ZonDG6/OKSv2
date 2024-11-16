@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ОКС</title>
+    <link rel="stylesheet" type="text/css" href="/Usersite/builder/styles.css">
+</head>
+<body>
+    <main>
+    <div class="mogenous-grotun-deconomy">
+        <span class="kemogen"></span>
+        <a href="/profile.html">Профиль</a>
+        <a href="/shablons.html">Шаблоны</a>
+        <a href="/designers.html">Идеи дизайнеров</a>
+        <a href="/course.html">Курсы</a>
+    </div>
+    <div class="container">
+        <h1>ОКС - Отечественный конструктор сайтов</h1>
+           <span>Наш конструктор отличается от других тем, что предлагает уникальные курсы пользования и улучшения дизайна. 
+            Мы обеспечиваем возможность сотрудничества с дизайнерами, а также предоставляем большой ассортимент шаблонов.</span>
+           
+        <button class="main-button" onclick="showRegistrationForm()">Регистрация</button>
+        <button class="main-button"><a href="C:\Users\Лиана\CodeCraft\create.html">Создать сайт</a></button>
+        <button class="main-button"><a href="/shablons.html">Использовать шаблоны</a></button>
+
+        <div class="registration-template" id="registrationForm">
+            <h2>Регистрация</h2>
+            <form>
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" name="username" required>
+                
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+                
+                <button type="submit" class="register-button">Зарегистрироваться</button>
+            </form>
+            
+            <div class="not_registration">
+                <p>Использовать сайт <button class="no-registration-button">без регистрации</button></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showRegistrationForm() {
+            document.getElementById('registrationForm').style.display = 'block'; // Отображаем форму регистрации
+        }
+        
+    </script>
+    
+    </main>
+
+    
+
+    <script>
+        const menuButton = document.getElementById('menu-button');
+        const menuItems = document.getElementById('menu-items');
+        menuButton.addEventListener('click', () => {
+            menuItems.classList.toggle('hidden');
+        });
+    </script>
+    <footer>
+        <p>Мы предлагаем лучшие решения для создания сайтов.</p>
+    </footer>
+</body>
+</html>
