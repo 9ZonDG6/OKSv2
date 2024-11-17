@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}ОКС{% endblock %}
+
+{% block sidebar %}
+{% if user.is_authenticated %}
+<div class="container-fluid my-3">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-group mb-3">
+                <a href="{% url 'BuilderOKS' %}" class="list-group-item btn">Создать сайт</a>
+                <a href="{% url 'Template' %}" class="list-group-item btn">Шаблоны</a>
+                <a href="{% url 'VideoLesson' %}" class="list-group-item btn">Смотреть курсы</a>
+                <a href="{% url 'HostingList' %}" class="list-group-item btn">Запрос на хостинг</a>
+            </ul>
+        </div>
+        <div class="col-md-10">
+            {% endif %}
+            {% endblock sidebar %}
+
+            {% block content %}
+            <div class="text-center mt-5">
+                {% if user.is_authenticated %}
+                <h2>В разработке</h2>
+                <br>
+                <p>Скоро можно будет посмотреть крутые шаблоны</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

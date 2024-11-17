@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}ОКС{% endblock %}
+
+{% block sidebar %}
+{% if user.is_authenticated %}
+<div class="container-fluid my-3">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="list-group mb-3">
+                <a href="{% url 'BuilderOKS' %}" class="list-group-item btn">Создать сайт</a>
+                <a href="{% url 'Template' %}" class="list-group-item btn">Шаблоны</a>
+                <a href="{% url 'VideoLesson' %}" class="list-group-item btn">Смотреть курсы</a>
+                <a href="{% url 'HostingList' %}" class="list-group-item btn">Запрос на хостинг</a>
+            </ul>
+        </div>
+        <div class="col-md-10">
+            {% endif %}
+            {% endblock sidebar %}
+
+            {% block content %}
+            <div class="text-center mt-5">
+                {% if user.is_authenticated %}
+                <h2>Добро пожаловать, {{user.username}}!</h2>
+                <br>
+                <p>Наш конструктор отличается от других тем,
+                    что предлагает уникальные курсы пользования и улучшения дизайна.</p>
+                <p>Мы обеспечиваем возможность сотрудничества с дизайнерами,
+                    а также предоставляем большой ассортимент шаблонов.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center mt-5">
+    <h2>Отечественный конструктор сайтов!</h2>
+</div>
+{% endif %}
+{% endblock content %}

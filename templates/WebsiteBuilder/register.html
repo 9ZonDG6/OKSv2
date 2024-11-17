@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация на ОКС</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'home' %}">ОКС</a>
+</nav>
+
+<div class="container mt-5">
+    <h2>Регистрация</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="last_name">Фамилия:</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" required>
+        </div>
+        <div class="form-group">
+            <label for="first_name">Имя:</label>
+            <input type="text" class="form-control" id="first_name" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            {% if form.email.errors %}
+            <div class="text-danger">{{ form.email.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="birth_date">Дата рождения:</label>
+            <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+            {% if form.birth_date.errors %}
+            <div class="text-danger">{{ form.birth_date.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+            {% if form.password.errors %}
+            <div class="text-danger">{{ form.password.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="password2">Подтверждение пароля:</label>
+            <input type="password" class="form-control" id="password2" name="password2" required>
+            {% if form.password2.errors %}
+            <div class="text-danger">{{ form.password2.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
