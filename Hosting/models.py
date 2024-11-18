@@ -16,7 +16,7 @@ class Hosting(models.Model):
         related_name="hostings",
     )
     title = models.CharField(verbose_name="Название запроса", max_length=100)
-    domen_name = models.CharField(verbose_name="Домен", max_length=100)
+    domen_name = models.CharField(verbose_name="Домен второго уровня", max_length=100)
     file_html = models.FileField(verbose_name="HTML файл", upload_to=upload_to_domen)
     file_css = models.FileField(
         verbose_name="CSS файл",

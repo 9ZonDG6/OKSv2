@@ -36,13 +36,13 @@ class HostingView(View):
             hostings = Hosting.objects.all()
             form = None
         else:
-            hostings = Hosting.objects.filter(user=request.user).first()
-            form = None if hostings else HostingRequestForm()
+            hostings = Hosting.objects.filter(user=request.user)
+            form = None if hostings.exists() else HostingRequestForm()
 
         return render(
             request,
             self.template_name,
-            {"hostings": [hostings] if hostings else [], "form": form},
+            {"hostings": hostings, "form": form},
         )
 
     def post(self, request):
