@@ -532,49 +532,46 @@
         function getSiteCode() {
             // Создаем новый документ
             const doc = document.implementation.createHTMLDocument('Новый сайт');
-
+        
             // Добавляем содержимое head
             const head = doc.head;
             const metaCharset = document.createElement('meta');
             metaCharset.setAttribute('charset', 'UTF-8');
             head.appendChild(metaCharset);
-
+        
             const title = document.createElement('title');
             title.textContent = 'Мой сайт';
             head.appendChild(title);
-
-            // Добавляем ссылку на внешние стили
-            const link = document.createElement('link');
-            link.setAttribute('type', 'text/css');
-            link.setAttribute('rel', 'stylesheet');
-            link.setAttribute('href', '/media/Usersite/{{directory}}/styles.css');
-            head.appendChild(link);
-
+        
+            // Добавляем ссылку на внешние стили с {{directory}}
+            const linkHTML = '<link type="text/css" rel="stylesheet" href="/media/Usersite/{{directory}}/styles.css">';
+            head.innerHTML += linkHTML;
+        
             // Добавляем содержимое body
             const body = doc.body;
-
+        
             // Устанавливаем цвет фона сайта
             const siteBackgroundColor = siteBackgroundColorInput.value || '#ffffff';
             body.style.backgroundColor = siteBackgroundColor;
-
+        
             // Проходим по всем блокам и добавляем их в новый документ
             blocksContainer.querySelectorAll('.block').forEach(blockElement => {
                 const newBlockElement = blockElement.cloneNode(true);
-
+        
                 // Удаляем атрибуты drag-and-drop
                 newBlockElement.removeAttribute('draggable');
                 newBlockElement.classList.remove('draggable');
-
+        
                 // Добавляем блок в body
                 body.appendChild(newBlockElement);
             });
-
+        
             // Получаем код страницы
             const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-
+        
             // Создаем Blob из строки с кодом для builder.html
             const htmlBlob = new Blob([html], { type: 'text/html' });
-
+        
             // Создаем контент для styles.css
             const cssContent = `
                 body {
@@ -618,10 +615,10 @@
                     overflow-wrap: break-word;
                 }
             `;
-
+        
             // Создаем Blob для styles.css
             const cssBlob = new Blob([cssContent], { type: 'text/css' });
-
+        
             // Функция для скачивания файла
             function downloadBlob(blob, filename) {
                 const link = document.createElement('a');
@@ -631,10 +628,10 @@
                 link.click();
                 document.body.removeChild(link);
             }
-
+        
             // Скачиваем builder.html
             downloadBlob(htmlBlob, 'index.html');
-
+        
             // Скачиваем styles.css
             downloadBlob(cssBlob, 'styles.css');
         }
