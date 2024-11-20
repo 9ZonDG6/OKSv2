@@ -123,7 +123,7 @@
 
         // Объект для хранения состояния блоков
         const blocks = new Map();
-
+        const blockNames = [];
         let blockCount = 0; // Счетчик блоков
         
         // Предупреждение только если есть изменения
@@ -338,10 +338,16 @@
         function deleteBlock(blockId) {
             const blockElement = document.getElementById(blockId);
             if (blockElement) {
+                const blockName = blocks.get(blockId).name;
+                const nameIndex = blockNames.indexOf(blockName);
+                if (nameIndex !== -1) {
+                    blockNames.splice(nameIndex, 1);
+                }
+        
                 blocksContainer.removeChild(blockElement);
                 blocks.delete(blockId);
 
-                // Удаляем из выпадающего списка
+
                 const option = blockSelect.querySelector(`option[value='${blockId}']`);
                 if (option) {
                     blockSelect.removeChild(option);
@@ -432,7 +438,12 @@
                 alert('Пожалуйста, введите имя блока.');
                 return;
             }
+            if (blockNames.includes(name)) {
+                alert('Блок с таким именем уже существует. Введите другое имя.');
+                return;
+            }
             addNewBlock(name);
+            blockNames.push(name);
             newBlockNameInput.value = '';
         });
 
@@ -632,7 +643,7 @@
         getCodeButton.addEventListener('click', getSiteCode);
 
         // Инициализация: добавление блока по умолчанию
-        addNewBlock('Блок 1');
+        addNewBlock('Заголовок');
     });
 </script>
 {% endblock content %}
