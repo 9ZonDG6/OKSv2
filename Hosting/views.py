@@ -28,6 +28,7 @@ class VideoLesson(TemplateView):
     template_name = "WebsiteBuilder/videolesson.html"
 
 
+@method_decorator(login_required, name="dispatch")
 class HostingView(View):
     template_name = "WebsiteBuilder/hosting.html"
 

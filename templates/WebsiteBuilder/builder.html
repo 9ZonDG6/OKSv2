@@ -534,8 +534,9 @@
 
             // Добавляем ссылку на внешние стили
             const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'styles.css';
+            link.setAttribute('type', 'text/css');
+            link.setAttribute('rel', 'stylesheet');
+            link.setAttribute('href', '/media/Usersite/{{directory}}/styles.css');
             head.appendChild(link);
 
             // Добавляем содержимое body
