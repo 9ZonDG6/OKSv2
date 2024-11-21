@@ -8,6 +8,11 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0.9;
+  animation: fadeIn 2s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .navbar {
@@ -43,10 +48,19 @@ body {
 }
 
 h1 {
+  animation: epicText 1.5s ease-in-out forwards;
+  transform: translateY(-50px); /* Начальная позиция за пределами экрана */
+  opacity: 0; /* Скрываем текст на старте */
   font-size: 48px;
   color: white;
   margin-bottom: 20px;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.65), 0 0 25px #ffffff;
+}
+@keyframes epicText {
+  to {
+      transform: translateY(0); /* Возвращаем в обычное положение */
+      opacity: 1; /* Делаем текст видимым */
+  }
 }
 
 span {
