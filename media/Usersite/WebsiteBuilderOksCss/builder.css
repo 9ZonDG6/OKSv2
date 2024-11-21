@@ -103,6 +103,7 @@ body {
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
+    min-height: 66px;
 }
 
 .block.full-width {
@@ -142,11 +143,17 @@ body {
     box-sizing: border-box;
 }
 
+.text-content span {
+    display: inline;
+    background-color: #f0f0f0;
+}
+
+
 .content-editable {
     border: 1px solid #ccc;
     padding: 10px;
     min-height: 100px;
-    background-color: #ffffff;
+    background-color: transparent;
     color: #000000;
     margin-top: 5px;
     word-wrap: break-word;

@@ -49,7 +49,7 @@
             <input type="color" id="background-color-input" value="#f0f0f0">
 
             <label for="site-background-color-input">Цвет фона сайта:</label>
-            <input type="color" id="site-background-color-input" value="#ffffff">
+            <input type="color" id="site-background-color-input" value="#f0f0f0">
 
             <label for="image-file-input">Загрузите изображение (необязательно):</label>
             <input type="file" id="image-file-input" accept="image/*">
@@ -65,8 +65,8 @@
 
             <label for="text-color-input">Цвет текста:</label>
             <input type="color" id="text-color-input" value="#000000">
-            
-            <label for="text-background-color-input">Цвет фона текста:</label>
+
+            <label for="text-background-color-input">Фон текста:</label>
             <input type="color" id="text-background-color-input" value="#ffffff">
 
             <label for="text-alignment-select">Выравнивание текста:</label>
@@ -184,7 +184,7 @@
                 height: '',
                 fontSize: '16',
                 textColor: '#000000',
-                textBackgroundColor: '#ffffff', // Инициализируем цвет фона текста
+                textBackgroundColor: '#f0f0f0', // Инициализируем цвет фона текста
                 textAlignment: 'left',
                 backgroundColor: '#f0f0f0',
                 imageDataUrl: '',
@@ -267,27 +267,27 @@
     function updateTextContent() {
         const selectedBlockId = blockSelect.value;
         const selectedBlock = document.getElementById(selectedBlockId);
-
+    
         if (selectedBlock) {
             const blockState = blocks.get(selectedBlockId);
-
+    
             // Обновляем размер и цвет шрифта
             const fontSizeValue = fontSizeInput.value.trim() || '16';
             blockState.fontSize = fontSizeValue;
-
+    
             const textColorValue = textColorInput.value || '#000000';
             blockState.textColor = textColorValue;
-
-            const textBackgroundColorValue = textBackgroundColorInput.value || '#ffffff';
+    
+            const textBackgroundColorValue = textBackgroundColorInput.value || '#f0f0f0';
             blockState.textBackgroundColor = textBackgroundColorValue;
-
+    
             const textAlignmentValue = textAlignmentSelect.value || 'left';
             blockState.textAlignment = textAlignmentValue;
-
+    
             // Обновляем содержимое
             const contentContainer = selectedBlock.querySelector('.block-content');
             contentContainer.innerHTML = ''; // Очищаем содержимое
-
+    
             // Обновляем изображение
             if (blockState.imageDataUrl) {
                 const imgElement = document.createElement('img');
@@ -295,22 +295,49 @@
                 imgElement.alt = '';
                 contentContainer.appendChild(imgElement);
             }
-
+    
             // Создаем элемент для текстового содержимого
             const textContentElement = document.createElement('div');
             textContentElement.classList.add('text-content');
-            textContentElement.style.fontSize = `${fontSizeValue}px`;
-            textContentElement.style.color = textColorValue;
-            textContentElement.style.backgroundColor = textBackgroundColorValue;
             textContentElement.style.textAlign = textAlignmentValue;
+    
+            // Устанавливаем содержимое из редактируемой области
             textContentElement.innerHTML = contentEditableDiv.innerHTML;
-
+    
+            // Функция для рекурсивного применения стилей и обертки текстовых узлов
+            function applyStyles(element) {
+                if (element.nodeType === Node.TEXT_NODE && element.textContent.trim() !== '') {
+                    const span = document.createElement('span');
+                    span.style.backgroundColor = textBackgroundColorValue;
+                    span.style.fontSize = `${fontSizeValue}px`;
+                    span.style.color = textColorValue;
+                    span.textContent = element.textContent;
+                    element.parentNode.replaceChild(span, element);
+                } else if (element.nodeType === Node.ELEMENT_NODE) {
+                    // Применяем стили только к текстовым узлам
+                    element.style.fontSize = `${fontSizeValue}px`;
+                    element.style.color = textColorValue;
+                    element.style.textAlign = textAlignmentValue;
+                    // Не устанавливаем background-color на элемент
+                    // element.style.backgroundColor = textBackgroundColorValue;
+            
+                    Array.from(element.childNodes).forEach(child => {
+                        applyStyles(child);
+                    });
+                }
+            }
+    
+            // Применяем стили к текстовому содержимому
+            applyStyles(textContentElement);
+    
             contentContainer.appendChild(textContentElement);
-
+    
             blockState.content = contentEditableDiv.innerHTML;
-
+    
             // Применяем выравнивание к редактируемой области
             contentEditableDiv.style.textAlign = textAlignmentValue;
+            // Убираем установку background-color на редактируемую область
+            // contentEditableDiv.style.backgroundColor = textBackgroundColorValue;
         }
     }
 
@@ -551,7 +578,7 @@
         html += '<title>Мой сайт</title>\n';
 
         // Используем кодированные фигурные скобки в href
-        html += '<link type="text/css" rel="stylesheet" href="/media/Usersite/&#123;&#123;directory&#125;&#125;/styles.css">\n';
+        html += '<link type="text/css" rel="stylesheet" href="/media/Usersite/\u007B\u007Bdirectory\u007D\u007D/styles.css">\n';
 
         // Закрываем тег head и начинаем body
         html += '</head>\n<body';
