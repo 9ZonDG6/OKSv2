@@ -65,6 +65,9 @@
 
             <label for="text-color-input">Цвет текста:</label>
             <input type="color" id="text-color-input" value="#000000">
+            
+            <label for="text-background-color-input">Цвет фона текста:</label>
+            <input type="color" id="text-background-color-input" value="#ffffff">
 
             <label for="text-alignment-select">Выравнивание текста:</label>
             <select id="text-alignment-select">
@@ -102,545 +105,547 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const blockSelect = document.getElementById('block-select');
-        const alignmentSelect = document.getElementById('alignment-select');
-        const widthInput = document.getElementById('width-input');
-        const heightInput = document.getElementById('height-input');
-        const fontSizeInput = document.getElementById('font-size-input');
-        const textColorInput = document.getElementById('text-color-input');
-        const textAlignmentSelect = document.getElementById('text-alignment-select');
-        const backgroundColorInput = document.getElementById('background-color-input');
-        const imageFileInput = document.getElementById('image-file-input');
-        const contentEditableDiv = document.getElementById('content-editable');
-        const formattingToolbar = document.querySelector('.formatting-toolbar');
-        const newBlockNameInput = document.getElementById('new-block-name');
-        const addBlockButton = document.getElementById('add-block');
-        const blocksContainer = document.getElementById('preview-container');
-        const getCodeButton = document.getElementById('get-code');
-        const duplicateBlockButton = document.getElementById('duplicate-block');
-        const deleteBlockButton = document.getElementById('delete-block');
-        const siteBackgroundColorInput = document.getElementById('site-background-color-input');
+    const blockSelect = document.getElementById('block-select');
+    const alignmentSelect = document.getElementById('alignment-select');
+    const widthInput = document.getElementById('width-input');
+    const heightInput = document.getElementById('height-input');
+    const fontSizeInput = document.getElementById('font-size-input');
+    const textColorInput = document.getElementById('text-color-input');
+    const textBackgroundColorInput = document.getElementById('text-background-color-input'); // Новое поле ввода
+    const textAlignmentSelect = document.getElementById('text-alignment-select');
+    const backgroundColorInput = document.getElementById('background-color-input');
+    const imageFileInput = document.getElementById('image-file-input');
+    const contentEditableDiv = document.getElementById('content-editable');
+    const formattingToolbar = document.querySelector('.formatting-toolbar');
+    const newBlockNameInput = document.getElementById('new-block-name');
+    const addBlockButton = document.getElementById('add-block');
+    const blocksContainer = document.getElementById('preview-container');
+    const getCodeButton = document.getElementById('get-code');
+    const duplicateBlockButton = document.getElementById('duplicate-block');
+    const deleteBlockButton = document.getElementById('delete-block');
+    const siteBackgroundColorInput = document.getElementById('site-background-color-input');
 
-        // Объект для хранения состояния блоков
-        const blocks = new Map();
-        const blockNames = [];
-        let blockCount = 0; // Счетчик блоков
-        
-        // Предупреждение только если есть изменения
-        window.addEventListener('beforeunload', function (event) {
-            // Устанавливаем сообщение предупреждения
-            event.preventDefault();
-            event.returnValue = ''; // Некоторые браузеры требуют пустую строку
-        });
+    // Объект для хранения состояния блоков
+    const blocks = new Map();
+    const blockNames = [];
+    let blockCount = 0; // Счетчик блоков
 
-        // Обработчик для изменения фона сайта
-        siteBackgroundColorInput.addEventListener('input', () => {
-            blocksContainer.style.backgroundColor = siteBackgroundColorInput.value || '#ffffff';
-        });
+    // Предупреждение только если есть изменения
+    window.addEventListener('beforeunload', function (event) {
+        // Устанавливаем сообщение предупреждения
+        event.preventDefault();
+        event.returnValue = ''; // Некоторые браузеры требуют пустую строку
+    });
 
-        // Функция для добавления нового блока
-        function addNewBlock(name, blockState = null) {
-            blockCount++;
-            const blockId = `block${blockCount}`;
+    // Обработчик для изменения фона сайта
+    siteBackgroundColorInput.addEventListener('input', () => {
+        blocksContainer.style.backgroundColor = siteBackgroundColorInput.value || '#ffffff';
+    });
 
-            // Создаём элемент блока
-            const blockElement = document.createElement('div');
-            blockElement.id = blockId;
-            blockElement.classList.add('block', 'align-center', 'draggable');
-            blockElement.setAttribute('draggable', 'true');
+    // Функция для добавления нового блока
+    function addNewBlock(name, blockState = null) {
+        blockCount++;
+        const blockId = `block${blockCount}`;
 
-            // Добавляем обработчик клика для выбора блока
-            blockElement.addEventListener('click', () => {
-                blockSelect.value = blockId;
-                blockSelect.dispatchEvent(new Event('change'));
-            });
+        // Создаём элемент блока
+        const blockElement = document.createElement('div');
+        blockElement.id = blockId;
+        blockElement.classList.add('block', 'align-center', 'draggable');
+        blockElement.setAttribute('draggable', 'true');
 
-            // Создаём контейнер для содержимого
-            const contentContainer = document.createElement('div');
-            contentContainer.classList.add('block-content');
-            blockElement.appendChild(contentContainer);
-
-            // Добавляем обработчики для drag-and-drop
-            addDragAndDropHandlers(blockElement);
-
-            // Добавляем блок в контейнер
-            blocksContainer.appendChild(blockElement);
-
-            // Сохраняем состояние блока
-            if (blockState) {
-                blocks.set(blockId, {
-                    ...blockState,
-                    name,
-                });
-            } else {
-                blocks.set(blockId, {
-                    name,
-                    alignment: 'align-center',
-                    width: '60%',
-                    height: '',
-                    fontSize: '16',
-                    textColor: '#000000',
-                    textAlignment: 'left',
-                    backgroundColor: '#f0f0f0',
-                    imageDataUrl: '',
-                    content: ''
-                });
-            }
-
-            // Добавляем блок в выпадающий список
-            const option = document.createElement('option');
-            option.value = blockId;
-            option.textContent = name;
-            blockSelect.appendChild(option);
-
-            // Устанавливаем новый блок как выбранный
+        // Добавляем обработчик клика для выбора блока
+        blockElement.addEventListener('click', () => {
             blockSelect.value = blockId;
             blockSelect.dispatchEvent(new Event('change'));
+        });
+
+        // Создаём контейнер для содержимого
+        const contentContainer = document.createElement('div');
+        contentContainer.classList.add('block-content');
+        blockElement.appendChild(contentContainer);
+
+        // Добавляем обработчики для drag-and-drop
+        addDragAndDropHandlers(blockElement);
+
+        // Добавляем блок в контейнер
+        blocksContainer.appendChild(blockElement);
+
+        // Сохраняем состояние блока
+        if (blockState) {
+            blocks.set(blockId, {
+                ...blockState,
+                name,
+            });
+        } else {
+            blocks.set(blockId, {
+                name,
+                alignment: 'align-center',
+                width: '60%',
+                height: '',
+                fontSize: '16',
+                textColor: '#000000',
+                textBackgroundColor: '#ffffff', // Инициализируем цвет фона текста
+                textAlignment: 'left',
+                backgroundColor: '#f0f0f0',
+                imageDataUrl: '',
+                content: ''
+            });
         }
 
-        // Функция для обновления отображения выбранного блока
-        function updateBlock() {
-            const selectedBlockId = blockSelect.value;
-            const selectedBlock = document.getElementById(selectedBlockId);
+        // Добавляем блок в выпадающий список
+        const option = document.createElement('option');
+        option.value = blockId;
+        option.textContent = name;
+        blockSelect.appendChild(option);
 
-            if (selectedBlock) {
-                const blockState = blocks.get(selectedBlockId);
+        // Устанавливаем новый блок как выбранный
+        blockSelect.value = blockId;
+        blockSelect.dispatchEvent(new Event('change'));
+    }
 
-                // Обновляем выравнивание блока
-                selectedBlock.classList.remove('align-left', 'align-center', 'align-right', 'full-width');
-                selectedBlock.classList.add(alignmentSelect.value);
+    // Функция для обновления отображения выбранного блока
+    function updateBlock() {
+        const selectedBlockId = blockSelect.value;
+        const selectedBlock = document.getElementById(selectedBlockId);
 
-                // Если ширина 100%, добавляем класс full-width
-                if (widthInput.value.trim() === '100%') {
-                    selectedBlock.classList.add('full-width');
-                }
-
-                blockState.alignment = alignmentSelect.value;
-
-                // Обновляем размеры
-                const widthValue = widthInput.value.trim();
-                const heightValue = heightInput.value.trim();
-
-                selectedBlock.style.width = widthValue || '60%';
-                blockState.width = widthValue || '60%';
-
-                selectedBlock.style.height = heightValue ? `${heightValue}px` : 'auto';
-                blockState.height = heightValue;
-
-                // Обновляем цвет фона
-                const backgroundColorValue = backgroundColorInput.value || '#f0f0f0';
-                selectedBlock.style.backgroundColor = backgroundColorValue;
-                blockState.backgroundColor = backgroundColorValue;
-
-                // Обновляем содержимое блока
-                const contentContainer = selectedBlock.querySelector('.block-content');
-                contentContainer.innerHTML = ''; // Очищаем содержимое
-
-                // Обновляем изображение
-                if (blockState.imageDataUrl) {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = blockState.imageDataUrl;
-                    imgElement.alt = '';
-
-                    contentContainer.appendChild(imgElement);
-                }
-
-                // Обновляем текстовый контент
-                const textContentElement = document.createElement('div');
-                textContentElement.classList.add('text-content');
-                textContentElement.style.fontSize = `${blockState.fontSize}px`;
-                textContentElement.style.color = blockState.textColor;
-                textContentElement.style.textAlign = blockState.textAlignment;
-                textContentElement.innerHTML = blockState.content;
-
-                contentContainer.appendChild(textContentElement);
-            }
-        }
-
-        // Функция для обновления текстового содержимого блока
-        function updateTextContent() {
-            const selectedBlockId = blockSelect.value;
-            const selectedBlock = document.getElementById(selectedBlockId);
-
-            if (selectedBlock) {
-                const blockState = blocks.get(selectedBlockId);
-
-                // Обновляем размер и цвет шрифта
-                const fontSizeValue = fontSizeInput.value.trim() || '16';
-                blockState.fontSize = fontSizeValue;
-
-                const textColorValue = textColorInput.value || '#000000';
-                blockState.textColor = textColorValue;
-
-                const textAlignmentValue = textAlignmentSelect.value || 'left';
-                blockState.textAlignment = textAlignmentValue;
-
-                // Обновляем содержимое
-                const contentContainer = selectedBlock.querySelector('.block-content');
-                contentContainer.innerHTML = ''; // Очищаем содержимое
-
-                // Обновляем изображение
-                if (blockState.imageDataUrl) {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = blockState.imageDataUrl;
-                    imgElement.alt = '';
-                    contentContainer.appendChild(imgElement);
-                }
-
-                const textContentElement = document.createElement('div');
-                textContentElement.classList.add('text-content');
-                textContentElement.style.fontSize = `${fontSizeValue}px`;
-                textContentElement.style.color = textColorValue;
-                textContentElement.style.textAlign = textAlignmentValue;
-                textContentElement.innerHTML = contentEditableDiv.innerHTML;
-
-                contentContainer.appendChild(textContentElement);
-
-                blockState.content = contentEditableDiv.innerHTML;
-
-                // Применяем выравнивание к редактируемой области
-                contentEditableDiv.style.textAlign = textAlignmentValue;
-            }
-        }
-
-        // Функция для обработки изменения изображения
-        function updateImage() {
-            const selectedBlockId = blockSelect.value;
-            const selectedBlock = document.getElementById(selectedBlockId);
+        if (selectedBlock) {
             const blockState = blocks.get(selectedBlockId);
 
-            if (selectedBlock) {
-                const file = imageFileInput.files[0];
+            // Обновляем выравнивание блока
+            selectedBlock.classList.remove('align-left', 'align-center', 'align-right', 'full-width');
+            selectedBlock.classList.add(alignmentSelect.value);
 
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const result = e.target.result;
-                        if (typeof result === 'string') {
-                            blockState.imageDataUrl = result;
-
-                            // Обновляем изображение
-                            updateBlock();
-                        } else {
-                            console.error('FileReader result is not a string');
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    // Если изображение удалено
-                    blockState.imageDataUrl = '';
-                    updateBlock();
-                }
+            // Если ширина 100%, добавляем класс full-width
+            if (widthInput.value.trim() === '100%') {
+                selectedBlock.classList.add('full-width');
             }
+
+            blockState.alignment = alignmentSelect.value;
+
+            // Обновляем размеры
+            const widthValue = widthInput.value.trim();
+            const heightValue = heightInput.value.trim();
+
+            selectedBlock.style.width = widthValue || '60%';
+            blockState.width = widthValue || '60%';
+
+            selectedBlock.style.height = heightValue ? `${heightValue}px` : 'auto';
+            blockState.height = heightValue;
+
+            // Обновляем цвет фона
+            const backgroundColorValue = backgroundColorInput.value || '#f0f0f0';
+            selectedBlock.style.backgroundColor = backgroundColorValue;
+            blockState.backgroundColor = backgroundColorValue;
+
+            // Обновляем содержимое блока
+            const contentContainer = selectedBlock.querySelector('.block-content');
+            contentContainer.innerHTML = ''; // Очищаем содержимое
+
+            // Обновляем изображение
+            if (blockState.imageDataUrl) {
+                const imgElement = document.createElement('img');
+                imgElement.src = blockState.imageDataUrl;
+                imgElement.alt = '';
+
+                contentContainer.appendChild(imgElement);
+            }
+
+            // Обновляем текстовый контент
+            const textContentElement = document.createElement('div');
+            textContentElement.classList.add('text-content');
+            textContentElement.style.fontSize = `${blockState.fontSize}px`;
+            textContentElement.style.color = blockState.textColor;
+            textContentElement.style.backgroundColor = blockState.textBackgroundColor; // Применяем цвет фона текста
+            textContentElement.style.textAlign = blockState.textAlignment;
+            textContentElement.innerHTML = blockState.content;
+
+            contentContainer.appendChild(textContentElement);
         }
+    }
 
-        // Функция для удаления блока
-        function deleteBlock(blockId) {
-            const blockElement = document.getElementById(blockId);
-            if (blockElement) {
-                const blockName = blocks.get(blockId).name;
-                const nameIndex = blockNames.indexOf(blockName);
-                if (nameIndex !== -1) {
-                    blockNames.splice(nameIndex, 1);
-                }
-        
-                blocksContainer.removeChild(blockElement);
-                blocks.delete(blockId);
+    // Функция для обновления текстового содержимого блока
+    function updateTextContent() {
+        const selectedBlockId = blockSelect.value;
+        const selectedBlock = document.getElementById(selectedBlockId);
 
+        if (selectedBlock) {
+            const blockState = blocks.get(selectedBlockId);
 
-                const option = blockSelect.querySelector(`option[value='${blockId}']`);
-                if (option) {
-                    blockSelect.removeChild(option);
-                }
+            // Обновляем размер и цвет шрифта
+            const fontSizeValue = fontSizeInput.value.trim() || '16';
+            blockState.fontSize = fontSizeValue;
 
-                // Если удаленный блок был выбранным, выбираем другой
-                if (blockSelect.value === blockId) {
-                    if (blockSelect.options.length > 0) {
-                        blockSelect.value = blockSelect.options[0].value;
-                        blockSelect.dispatchEvent(new Event('change'));
+            const textColorValue = textColorInput.value || '#000000';
+            blockState.textColor = textColorValue;
+
+            const textBackgroundColorValue = textBackgroundColorInput.value || '#ffffff';
+            blockState.textBackgroundColor = textBackgroundColorValue;
+
+            const textAlignmentValue = textAlignmentSelect.value || 'left';
+            blockState.textAlignment = textAlignmentValue;
+
+            // Обновляем содержимое
+            const contentContainer = selectedBlock.querySelector('.block-content');
+            contentContainer.innerHTML = ''; // Очищаем содержимое
+
+            // Обновляем изображение
+            if (blockState.imageDataUrl) {
+                const imgElement = document.createElement('img');
+                imgElement.src = blockState.imageDataUrl;
+                imgElement.alt = '';
+                contentContainer.appendChild(imgElement);
+            }
+
+            // Создаем элемент для текстового содержимого
+            const textContentElement = document.createElement('div');
+            textContentElement.classList.add('text-content');
+            textContentElement.style.fontSize = `${fontSizeValue}px`;
+            textContentElement.style.color = textColorValue;
+            textContentElement.style.backgroundColor = textBackgroundColorValue;
+            textContentElement.style.textAlign = textAlignmentValue;
+            textContentElement.innerHTML = contentEditableDiv.innerHTML;
+
+            contentContainer.appendChild(textContentElement);
+
+            blockState.content = contentEditableDiv.innerHTML;
+
+            // Применяем выравнивание к редактируемой области
+            contentEditableDiv.style.textAlign = textAlignmentValue;
+        }
+    }
+
+    // Функция для обработки изменения изображения
+    function updateImage() {
+        const selectedBlockId = blockSelect.value;
+        const selectedBlock = document.getElementById(selectedBlockId);
+        const blockState = blocks.get(selectedBlockId);
+
+        if (selectedBlock) {
+            const file = imageFileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const result = e.target.result;
+                    if (typeof result === 'string') {
+                        blockState.imageDataUrl = result;
+
+                        // Обновляем изображение
+                        updateBlock();
                     } else {
-                        // Нет блоков, очищаем поля
-                        contentEditableDiv.innerHTML = '';
+                        console.error('FileReader result is not a string');
                     }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Если изображение удалено
+                blockState.imageDataUrl = '';
+                updateBlock();
+            }
+        }
+    }
+
+    // Функция для удаления блока
+    function deleteBlock(blockId) {
+        const blockElement = document.getElementById(blockId);
+        if (blockElement) {
+            const blockName = blocks.get(blockId).name;
+            const nameIndex = blockNames.indexOf(blockName);
+            if (nameIndex !== -1) {
+                blockNames.splice(nameIndex, 1);
+            }
+
+            blocksContainer.removeChild(blockElement);
+            blocks.delete(blockId);
+
+
+            const option = blockSelect.querySelector(`option[value='${blockId}']`);
+            if (option) {
+                blockSelect.removeChild(option);
+            }
+
+            // Если удаленный блок был выбранным, выбираем другой
+            if (blockSelect.value === blockId) {
+                if (blockSelect.options.length > 0) {
+                    blockSelect.value = blockSelect.options[0].value;
+                    blockSelect.dispatchEvent(new Event('change'));
+                } else {
+                    // Нет блоков, очищаем поля
+                    contentEditableDiv.innerHTML = '';
                 }
             }
         }
+    }
 
-        // Функция для дублирования блока
-        function duplicateBlock() {
-            const selectedBlockId = blockSelect.value;
-            const blockState = blocks.get(selectedBlockId);
-            if (blockState) {
-                const newName = blockState.name + ' (копия)';
-                // Создаем глубокую копию состояния блока
-                const newBlockState = JSON.parse(JSON.stringify(blockState));
-                addNewBlock(newName, newBlockState);
-            }
+    // Функция для дублирования блока
+    function duplicateBlock() {
+        const selectedBlockId = blockSelect.value;
+        const blockState = blocks.get(selectedBlockId);
+        if (blockState) {
+            const newName = blockState.name + ' (копия)';
+            // Создаем глубокую копию состояния блока
+            const newBlockState = JSON.parse(JSON.stringify(blockState));
+            addNewBlock(newName, newBlockState);
         }
+    }
 
-        // Функции для drag-and-drop
-        function addDragAndDropHandlers(element) {
-            element.addEventListener('dragstart', handleDragStart);
-            element.addEventListener('dragover', handleDragOver);
-            element.addEventListener('dragenter', handleDragEnter);
-            element.addEventListener('dragleave', handleDragLeave);
-            element.addEventListener('drop', handleDrop);
-            element.addEventListener('dragend', handleDragEnd);
+    // Функции для drag-and-drop
+    function addDragAndDropHandlers(element) {
+        element.addEventListener('dragstart', handleDragStart);
+        element.addEventListener('dragover', handleDragOver);
+        element.addEventListener('dragenter', handleDragEnter);
+        element.addEventListener('dragleave', handleDragLeave);
+        element.addEventListener('drop', handleDrop);
+        element.addEventListener('dragend', handleDragEnd);
+    }
+
+    let draggedElement = null;
+
+    function handleDragStart(e) {
+        this.style.opacity = '0.4';
+        draggedElement = this;
+        e.dataTransfer.effectAllowed = 'move';
+
+        // Выбираем блок, который начали перетаскивать
+        blockSelect.value = this.id;
+        blockSelect.dispatchEvent(new Event('change'));
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+
+    function handleDragEnter() {
+        this.classList.add('drag-over');
+    }
+
+    function handleDragLeave() {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.stopPropagation();
+        this.classList.remove('drag-over');
+
+        if (draggedElement !== this) {
+            blocksContainer.insertBefore(draggedElement, this);
         }
+        return false;
+    }
 
-        let draggedElement = null;
-
-        function handleDragStart(e) {
-            this.style.opacity = '0.4';
-            draggedElement = this;
-            e.dataTransfer.effectAllowed = 'move';
-
-            // Выбираем блок, который начали перетаскивать
-            blockSelect.value = this.id;
-            blockSelect.dispatchEvent(new Event('change'));
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            return false;
-        }
-
-        function handleDragEnter() {
-            this.classList.add('drag-over');
-        }
-
-        function handleDragLeave() {
-            this.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            e.stopPropagation();
-            this.classList.remove('drag-over');
-
-            if (draggedElement !== this) {
-                blocksContainer.insertBefore(draggedElement, this);
-            }
-            return false;
-        }
-
-        function handleDragEnd() {
-            this.style.opacity = '1';
-            blocksContainer.querySelectorAll('.block').forEach(block => {
-                block.classList.remove('drag-over');
-            });
-        }
-
-        // Обработчик для кнопки "Добавить блок"
-        addBlockButton.addEventListener('click', () => {
-            const name = newBlockNameInput.value.trim();
-            if (name === '') {
-                alert('Пожалуйста, введите имя блока.');
-                return;
-            }
-            if (blockNames.includes(name)) {
-                alert('Блок с таким именем уже существует. Введите другое имя.');
-                return;
-            }
-            addNewBlock(name);
-            blockNames.push(name);
-            newBlockNameInput.value = '';
+    function handleDragEnd() {
+        this.style.opacity = '1';
+        blocksContainer.querySelectorAll('.block').forEach(block => {
+            block.classList.remove('drag-over');
         });
+    }
 
-        // Обработчик изменения выбранного блока
-        blockSelect.addEventListener('change', () => {
-            const selectedBlockId = blockSelect.value;
-            const blockState = blocks.get(selectedBlockId);
+    // Обработчик для кнопки "Добавить блок"
+    addBlockButton.addEventListener('click', () => {
+        const name = newBlockNameInput.value.trim();
+        if (name === '') {
+            alert('Пожалуйста, введите имя блока.');
+            return;
+        }
+        if (blockNames.includes(name)) {
+            alert('Блок с таким именем уже существует. Введите другое имя.');
+            return;
+        }
+        addNewBlock(name);
+        blockNames.push(name);
+        newBlockNameInput.value = '';
+    });
 
-            if (blockState) {
-                // Устанавливаем текущее состояние
-                alignmentSelect.value = blockState.alignment;
-                widthInput.value = blockState.width;
-                heightInput.value = blockState.height;
-                fontSizeInput.value = blockState.fontSize;
-                textColorInput.value = blockState.textColor;
-                textAlignmentSelect.value = blockState.textAlignment;
-                backgroundColorInput.value = blockState.backgroundColor;
-                contentEditableDiv.innerHTML = blockState.content;
+    // Обработчик изменения выбранного блока
+    blockSelect.addEventListener('change', () => {
+        const selectedBlockId = blockSelect.value;
+        const blockState = blocks.get(selectedBlockId);
 
-                // Сброс поля загрузки файла
-                imageFileInput.value = '';
+        if (blockState) {
+            // Устанавливаем текущее состояние
+            alignmentSelect.value = blockState.alignment;
+            widthInput.value = blockState.width;
+            heightInput.value = blockState.height;
+            fontSizeInput.value = blockState.fontSize;
+            textColorInput.value = blockState.textColor;
+            textBackgroundColorInput.value = blockState.textBackgroundColor || '#ffffff'; // Устанавливаем цвет фона текста
+            textAlignmentSelect.value = blockState.textAlignment;
+            backgroundColorInput.value = blockState.backgroundColor;
+            contentEditableDiv.innerHTML = blockState.content;
 
-                // Обновляем блок и текст
-                updateBlock();
-                updateTextContent();
-            }
-        });
+            // Сброс поля загрузки файла
+            imageFileInput.value = '';
 
-        // Обработчики для изменения настроек блока
-        alignmentSelect.addEventListener('change', updateBlock);
-        widthInput.addEventListener('input', updateBlock);
-        heightInput.addEventListener('input', updateBlock);
-        backgroundColorInput.addEventListener('input', updateBlock);
-        imageFileInput.addEventListener('change', updateImage);
+            // Обновляем блок и текст
+            updateBlock();
+            updateTextContent();
+        }
+    });
 
-        // Обработчики для изменения настроек текста
-        fontSizeInput.addEventListener('input', updateTextContent);
-        textColorInput.addEventListener('input', updateTextContent);
-        textAlignmentSelect.addEventListener('change', updateTextContent);
-        contentEditableDiv.addEventListener('input', updateTextContent);
+    // Обработчики для изменения настроек блока
+    alignmentSelect.addEventListener('change', updateBlock);
+    widthInput.addEventListener('input', updateBlock);
+    heightInput.addEventListener('input', updateBlock);
+    backgroundColorInput.addEventListener('input', updateBlock);
+    imageFileInput.addEventListener('change', updateImage);
 
-        // Обработчики для кнопок форматирования
-        formattingToolbar.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-command]');
-            if (button) {
-                e.preventDefault(); // Предотвращаем действие по умолчанию
+    // Обработчики для изменения настроек текста
+    fontSizeInput.addEventListener('input', updateTextContent);
+    textColorInput.addEventListener('input', updateTextContent);
+    textBackgroundColorInput.addEventListener('input', updateTextContent); // Обработчик для цвета фона текста
+    textAlignmentSelect.addEventListener('change', updateTextContent);
+    contentEditableDiv.addEventListener('input', updateTextContent);
 
-                const command = button.getAttribute('data-command');
+    // Обработчики для кнопок форматирования
+    formattingToolbar.addEventListener('click', (e) => {
+        const button = e.target.closest('button[data-command]');
+        if (button) {
+            e.preventDefault(); // Предотвращаем действие по умолчанию
 
-                // Возвращаем фокус на contentEditableDiv
-                contentEditableDiv.focus();
+            const command = button.getAttribute('data-command');
 
-                if (command === 'createLink') {
-                    let url = prompt('Введите URL ссылки:', 'https://');
-                    if (url) {
-                        let selection = window.getSelection();
-                        if (selection.rangeCount > 0 && !selection.isCollapsed) {
-                            document.execCommand('createLink', false, url);
-                        } else {
-                            let linkText = prompt('Введите текст ссылки:', 'Ссылка');
-                            if (linkText) {
-                                document.execCommand('insertHTML', false, '<a href="' + url + '">' + linkText + '</a>');
-                            }
+            // Возвращаем фокус на contentEditableDiv
+            contentEditableDiv.focus();
+
+            if (command === 'createLink') {
+                let url = prompt('Введите URL ссылки:', 'https://');
+                if (url) {
+                    let selection = window.getSelection();
+                    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+                        document.execCommand('createLink', false, url);
+                    } else {
+                        let linkText = prompt('Введите текст ссылки:', 'Ссылка');
+                        if (linkText) {
+                            document.execCommand('insertHTML', false, '<a href="' + url + '">' + linkText + '</a>');
                         }
                     }
-                } else if (command === 'unlink') {
-                    document.execCommand('unlink', false, null);
-                } else {
-                    // Выполняем команду форматирования
-                    document.execCommand(command, false, null);
                 }
-
-                // Обновляем текстовое содержимое
-                updateTextContent();
+            } else if (command === 'unlink') {
+                document.execCommand('unlink', false, null);
+            } else {
+                // Выполняем команду форматирования
+                document.execCommand(command, false, null);
             }
+
+            // Обновляем текстовое содержимое
+            updateTextContent();
+        }
+    });
+
+    // Обработчики для кнопок "Дублировать блок" и "Удалить блок"
+    duplicateBlockButton.addEventListener('click', duplicateBlock);
+    deleteBlockButton.addEventListener('click', () => {
+        const selectedBlockId = blockSelect.value;
+        deleteBlock(selectedBlockId);
+    });
+
+    // Функция для получения кода сайта и загрузки файлов
+    function getSiteCode() {
+        // Создаем строку с началом HTML-документа
+        let html = '<!DOCTYPE html>\n<html>\n<head>\n';
+
+        // Добавляем мета-информацию и заголовок
+        html += '<meta charset="UTF-8">\n';
+        html += '<title>Мой сайт</title>\n';
+
+        // Используем кодированные фигурные скобки в href
+        html += '<link type="text/css" rel="stylesheet" href="/media/Usersite/&#123;&#123;directory&#125;&#125;/styles.css">\n';
+
+        // Закрываем тег head и начинаем body
+        html += '</head>\n<body';
+
+        // Устанавливаем цвет фона сайта
+        const siteBackgroundColor = siteBackgroundColorInput.value || '#ffffff';
+        html += ` style="background-color: ${siteBackgroundColor};">\n`;
+
+        // Проходим по всем блокам и добавляем их в HTML
+        blocksContainer.querySelectorAll('.block').forEach(blockElement => {
+            // Клонируем элемент и удаляем ненужные атрибуты
+            const newBlockElement = blockElement.cloneNode(true);
+            newBlockElement.removeAttribute('draggable');
+            newBlockElement.classList.remove('draggable');
+
+            // Добавляем внешний HTML блока в нашу строку
+            html += newBlockElement.outerHTML + '\n';
         });
 
-        // Обработчики для кнопок "Дублировать блок" и "Удалить блок"
-        duplicateBlockButton.addEventListener('click', duplicateBlock);
-        deleteBlockButton.addEventListener('click', () => {
-            const selectedBlockId = blockSelect.value;
-            deleteBlock(selectedBlockId);
-        });
+        // Закрываем body и html
+        html += '</body>\n</html>';
 
-        // Функция для получения кода сайта и загрузки файлов
-        function getSiteCode() {
-            // Создаем новый документ
-            const doc = document.implementation.createHTMLDocument('Новый сайт');
-        
-            // Добавляем содержимое head
-            const head = doc.head;
-            const metaCharset = document.createElement('meta');
-            metaCharset.setAttribute('charset', 'UTF-8');
-            head.appendChild(metaCharset);
-        
-            const title = document.createElement('title');
-            title.textContent = 'Мой сайт';
-            head.appendChild(title);
-        
-            // Добавляем ссылку на внешние стили с {{directory}}
-            const linkHTML = '<link type="text/css" rel="stylesheet" href="/media/Usersite/{{directory}}/styles.css">';
-            head.innerHTML += linkHTML;
-        
-            // Добавляем содержимое body
-            const body = doc.body;
-        
-            // Устанавливаем цвет фона сайта
-            const siteBackgroundColor = siteBackgroundColorInput.value || '#ffffff';
-            body.style.backgroundColor = siteBackgroundColor;
-        
-            // Проходим по всем блокам и добавляем их в новый документ
-            blocksContainer.querySelectorAll('.block').forEach(blockElement => {
-                const newBlockElement = blockElement.cloneNode(true);
-        
-                // Удаляем атрибуты drag-and-drop
-                newBlockElement.removeAttribute('draggable');
-                newBlockElement.classList.remove('draggable');
-        
-                // Добавляем блок в body
-                body.appendChild(newBlockElement);
-            });
-        
-            // Получаем код страницы
-            const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-        
-            // Создаем Blob из строки с кодом для builder.html
-            const htmlBlob = new Blob([html], { type: 'text/html' });
-        
-            // Создаем контент для styles.css
-            const cssContent = `
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: ${siteBackgroundColor};
-                }
-                .block {
-                    width: 60%;
-                    padding: 20px;
-                    margin: 10px auto;
-                    background-color: #f0f0f0;
-                    border: 1px solid #ccc;
-                    box-sizing: border-box;
-                }
-                .block.full-width {
-                    width: 100%;
-                    margin: 0;
-                }
-                .block.align-left {
-                    margin-left: 0;
-                    margin-right: auto;
-                }
-                .block.align-center {
-                    margin-left: auto;
-                    margin-right: auto;
-                }
-                .block.align-right {
-                    margin-left: auto;
-                    margin-right: 0;
-                }
-                .block img {
-                    max-width: 100%;
-                    height: auto;
-                    display: block;
-                    margin: 10px 0;
-                }
-                .text-content {
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                }
-            `;
-        
-            // Создаем Blob для styles.css
-            const cssBlob = new Blob([cssContent], { type: 'text/css' });
-        
-            // Функция для скачивания файла
-            function downloadBlob(blob, filename) {
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+        // Создаем Blob из строки с кодом для index.html
+        const htmlBlob = new Blob([html], { type: 'text/html' });
+
+        // Создаем контент для styles.css
+        const cssContent = `
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: ${siteBackgroundColor};
             }
-        
-            // Скачиваем builder.html
-            downloadBlob(htmlBlob, 'index.html');
-        
-            // Скачиваем styles.css
-            downloadBlob(cssBlob, 'styles.css');
+            .block {
+                width: 60%;
+                padding: 20px;
+                margin: 10px auto;
+                background-color: #f0f0f0;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+            .block.full-width {
+                width: 100%;
+                margin: 0;
+            }
+            .block.align-left {
+                margin-left: 0;
+                margin-right: auto;
+            }
+            .block.align-center {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .block.align-right {
+                margin-left: auto;
+                margin-right: 0;
+            }
+            .block img {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 10px 0;
+            }
+            .text-content {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+        `;
+
+        // Создаем Blob для styles.css
+        const cssBlob = new Blob([cssContent], { type: 'text/css' });
+
+        // Функция для скачивания файла
+        function downloadBlob(blob, filename) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        // Обработчик для кнопки "Скачать сайт"
-        getCodeButton.addEventListener('click', getSiteCode);
+        // Скачиваем index.html
+        downloadBlob(htmlBlob, 'index.html');
 
-        // Инициализация: добавление блока по умолчанию
-        addNewBlock('Заголовок');
-    });
+        // Скачиваем styles.css
+        downloadBlob(cssBlob, 'styles.css');
+    }
+
+    // Обработчик для кнопки "Скачать сайт"
+    getCodeButton.addEventListener('click', getSiteCode);
+
+    // Инициализация: добавление блока по умолчанию
+    addNewBlock('Заголовок');
+});
 </script>
 {% endblock content %}
