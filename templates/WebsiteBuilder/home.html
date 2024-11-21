@@ -2,38 +2,82 @@
 
 {% block title %}ОКС{% endblock %}
 
-{% block sidebar %}
-{% if user.is_authenticated %}
-<div class="container-fluid my-3">
-    <div class="row">
-        <div class="col-md-2">
-            <ul class="list-group mb-3">
-                <a href="{% url 'BuilderOKS' %}" class="list-group-item btn">Создать сайт</a>
-                <a href="{% url 'Template' %}" class="list-group-item btn">Шаблоны</a>
-                <a href="{% url 'VideoLesson' %}" class="list-group-item btn">Смотреть курсы</a>
-                <a href="{% url 'HostingList' %}" class="list-group-item btn">Запрос на хостинг</a>
-            </ul>
-        </div>
-        <div class="col-md-10">
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'home' %}">ОКС</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ user.last_name }} {{ user.username }}
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'profile' %}">Настройки</a>
+                        <form id="logout-form" method="post" action="{% url 'logout' %}"
+                              style="display: none;">
+                            {% csrf_token %}
+                        </form>
+                        <a class="dropdown-item" href="#"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Выйти</a>
+                    </div>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Регистрация</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Войти</a>
+                </li>
             {% endif %}
-            {% endblock sidebar %}
-
-            {% block content %}
-            <div class="text-center mt-5">
-                {% if user.is_authenticated %}
-                <h2>Добро пожаловать, {{user.username}}!</h2>
-                <br>
-                <p>Наш конструктор отличается от других тем,
-                    что предлагает уникальные курсы пользования и улучшения дизайна.</p>
-                <p>Мы обеспечиваем возможность сотрудничества с дизайнерами,
-                    а также предоставляем большой ассортимент шаблонов.</p>
-            </div>
-        </div>
+        </ul>
     </div>
-</div>
-{% else %}
-<div class="text-center mt-5">
-    <h2>Отечественный конструктор сайтов!</h2>
-</div>
-{% endif %}
+</nav>
+{% endblock navbar %}
+
+{% block content %}
+<link type="text/css" rel="stylesheet" href="/media/Usersite/WebsiteBuilderOksCss/BuilderHomeStyles.css">
+<body>
+    <main>
+        <div class="container">
+            <div class="_5"><h1>ОКС - Отечественный конструктор сайтов</h1></div>
+            <span>Мы предлагаем лучшие решения для создания сайтов</span>
+
+            <button class="main-button"><a href="{% url 'BuilderOKS' %}" class="btn">Создать сайт</a></button>
+            <button class="main-button"><a href="{% url 'Template' %}" class="btn">Шаблоны</a></button>
+            <button class="main-button"><a href="{% url 'VideoLesson' %}" class="btn">Смотреть курсы</a></button>
+            <button class="main-button"><a href="{% url 'HostingList' %}" class="btn">Запрос на хостинг</a></button>
+        </div>
+
+        <section>
+            <div class="rich-text w-richtext">
+                <h2>Создайте свой виртуальный мир с помощью нашего конструктора сайтов!</h2>
+
+                <blockquote class="block-quote">
+                    В современном мире, где каждое мгновение имеет значение, возможность быстро и легко создать свой собственный сайт стала не просто желанием, а необходимостью. Неважно, являетесь ли вы владельцем небольшого бизнеса, фрилансером или просто хотите поделиться своими идеями с миром — наш конструктор сайтов расширяет ваши горизонты и открывает двери к новым возможностям.
+                </blockquote>
+
+                <h4>Почему выбирают наш конструктор?</h4>
+
+                <ul role="list">
+                    <li>Простота и удобство: Вам не нужно быть профессиональным веб-разработчиком, чтобы создать красивый и функциональный сайт. Наш интуитивно понятный интерфейс позволяет вам самостоятельно конструировать страницы, добавлять элементы и настраивать дизайн, не тратя время на изучение сложных технологий.</li>
+                    <li>Безграничные возможности: Вы можете выбрать из множества шаблонов и настроить их под себя. Добавляйте изображения, видео, текст и любые другие элементы по вашему желанию. Ваш сайт может быть таким уникальным, как вы сами!</li>
+                    <li>Адаптивный дизайн: Сегодня большинство пользователей заходят в интернет с мобильных устройств. Наши шаблоны автоматически адаптируются под любые размеры экрана, так что ваш сайт будет великолепно выглядеть на телефонах, планшетах и компьютерах.</li>
+                    <li>Интегрированные функции хостинга
+                        Многие конструкторы сайтов включают хостинг в свои пакеты услуг. Это избавляет от необходимости искать отдельного хостинг-провайдера, так как пользователи могут сразу начать с создания сайта и сразу же сделать его доступным в интернете.</li>
+                </ul>
+
+                <ul role="list">
+                    <li>Поддержка 24/7: Мы всегда готовы помочь вам, если у вас возникнут вопросы или понадобится помощь. Наша команда поддержки работает круглосуточно, чтобы гарантировать, что ваш опыт будет безмятежным и приятным.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <div class="footer-wrap">
+        <div class="paragraph">Директор компании CodeCraft <a href="https://t.me/PodderjkaOKS_bot" target="_blank" class="footer-item">Telegram</a></div>
+        
+    </div>
 {% endblock content %}
+
